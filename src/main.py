@@ -1,4 +1,5 @@
 import json
+import langchain
 
 def handler(event, context): 
     body = json.loads(event["body"])

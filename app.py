@@ -6,7 +6,7 @@ class LangChainApp(Stack):
 
         handler = lambda_.Function(self, "LangChainHandler",
             runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset("src"),
+            code=lambda_.Code.from_asset("dist/lambda.zip"),
             handler="main.handler"
         )
 
@@ -30,7 +30,7 @@ class LangChainApp(Stack):
 
         post_integration = apigateway.LambdaIntegration(handler)
 
-        api.root.add_method("POST", post_integration)
+        api.root.add_method("POST", post_integration, authorization_type=apigateway.AuthorizationType.IAM)
 
 app = App()
 LangChainApp(app, "LangChainApp")
