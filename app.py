@@ -15,11 +15,12 @@ class LangChainApp(Stack):
             description="Showcases langchain use of llm models"
         )
 
-        api.add_model("RequestModel", content_type="application/json", 
+        request_model = api.add_model("RequestModel", content_type="application/json", 
             model_name="RequestModel",
+            description="Schema for request payload",
             schema={
                 "title": "requestParameters",
-                "type": apigateway.JsonSchemaType.STRING,
+                "type": apigateway.JsonSchemaType.OBJECT,
                 "properties": {
                     "prompt": {
                         "type": apigateway.JsonSchemaType.STRING
@@ -30,7 +31,19 @@ class LangChainApp(Stack):
 
         post_integration = apigateway.LambdaIntegration(handler)
 
-        api.root.add_method("POST", post_integration, authorization_type=apigateway.AuthorizationType.IAM)
+        api.root.add_method(
+            "POST", 
+            post_integration, 
+            authorization_type=apigateway.AuthorizationType.IAM,
+            request_models={
+                "application/json": request_model
+            },
+            request_validator_options={
+                "request_validator_name": 'request-validator',
+                "validate_request_body": True,
+                "validate_request_parameters": False
+            }
+        )
 
 app = App()
 LangChainApp(app, "LangChainApp")
