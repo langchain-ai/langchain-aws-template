@@ -1,4 +1,6 @@
-from aws_cdk import (App, Stack, aws_apigateway as apigateway, aws_lambda as lambda_)
+from aws_cdk import (App, Duration, Stack, aws_apigateway as apigateway, aws_lambda as lambda_, aws_secretsmanager as secretsmanager)
+import config
+
 
 class LangChainApp(Stack):
     def __init__(self, app: App, id: str) -> None:
@@ -7,8 +9,20 @@ class LangChainApp(Stack):
         handler = lambda_.Function(self, "LangChainHandler",
             runtime=lambda_.Runtime.PYTHON_3_9,
             code=lambda_.Code.from_asset("dist/lambda.zip"),
-            handler="main.handler"
+            handler="main.handler",
+            layers=[
+                lambda_.LayerVersion.from_layer_version_arn(
+                    self,
+                    "SecretsExtensionLayer",
+                    layer_version_arn=config.config.SECRETS_EXTENSION_ARN
+                )
+            ],
+            timeout=Duration.minutes(5)
         )
+
+        secret = secretsmanager.Secret.from_secret_name_v2(self, 'secret', config.config.API_KEYS_SECRET_NAME)
+        secret.grant_read(handler)
+        secret.grant_write(handler)
 
         api = apigateway.RestApi(self, "langchain-api",
             rest_api_name="LangChain Service Api",
