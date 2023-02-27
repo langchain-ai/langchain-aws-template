@@ -38,6 +38,9 @@ class LangChainApp(Stack):
                 "properties": {
                     "prompt": {
                         "type": apigateway.JsonSchemaType.STRING
+                    },
+                    "session_id": {
+                        "type": apigateway.JsonSchemaType.STRING
                     }
                 }
             }
