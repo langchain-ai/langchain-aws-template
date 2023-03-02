@@ -1,17 +1,20 @@
-.PHONY: clean dist bundle deploy
+.PHONY: clean dist bundle deploy diff
 
 clean:
 	@echo "Cleaning dist..."
-	rm -rf dist
+	cd service && rm -rf dist
 
 dist: clean
 	@echo "Creating dist dir..."
-	mkdir dist
+	cd service && mkdir dist
 
 bundle: dist
 	@echo "Bundling the lambda assets..."
-	./bundle.sh
+	cd service && ./bundle.sh
 
 deploy: bundle
 	@echo "Deploying..."
-	cdk deploy
+	cd service && cdk deploy
+
+diff: 
+	cd service && cdk diff
