@@ -1,4 +1,7 @@
-.PHONY: clean dist bundle deploy diff
+.PHONY: prepare clean dist bundle deploy diff
+
+prepare:
+	npm install -g aws-cdk
 
 clean:
 	@echo "Cleaning dist..."
