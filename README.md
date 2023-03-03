@@ -11,7 +11,7 @@ This package contains a service api template that deploys a langchain based gene
 ## Deploy to AWS
 Clone the repository
 ```bash
-git clone https://github.com/3coins/langchain-aws-template
+git clone https://github.com/3coins/langchain-aws-template.git
 ```
 
 Install the aws-cdk tool
