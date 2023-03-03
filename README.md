@@ -28,5 +28,9 @@ make deploy
 Note the api-id and resource-id from the deployment step 
 
 ```bash
-aws apigateway test-invoke-method --rest-api-id <api-id> --http-method POST --body '{"prompt": "explain code: print(\"Hello world\")", "session_id": ""}' --resource-id <resource-id> --output json
+aws apigateway test-invoke-method --rest-api-id <api-id> \
+    --http-method POST \
+    --body '{"prompt": "explain code: print(\"Hello world\")", "session_id": ""}' \
+    --resource-id <resource-id> \
+    --output json
 ```
