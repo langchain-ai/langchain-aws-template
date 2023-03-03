@@ -1,7 +1,4 @@
-.PHONY: prepare clean dist bundle deploy diff setup_env run
-
-prepare:
-	npm install -g aws-cdk
+.PHONY: clean dist bundle deploy diff setup-service setup-streamlit run
 
 clean:
 	@echo "Cleaning dist..."
@@ -22,9 +19,13 @@ deploy: bundle
 diff: 
 	cd service && cdk diff
 
-setup_env:
+setup-service:
+	conda env create -f service/environment.yml
+	conda activate langchain-aws-service
+
+setup-streamlit:
 	conda env create -f streamlit_app/environment.yml
-	conda activate langchain-aws-template
+	conda activate langchain-aws-streamlit
 
 run:
 	cd streamlit_app && streamlit run app.py

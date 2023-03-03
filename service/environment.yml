@@ -1,10 +1,11 @@
-name: langchain-aws-streamlit
+name: langchain-aws-service
 channels:
   - https://conda.anaconda.org/conda-forge
 dependencies:
   - python=3.9
   - pip
   - pip:
-    - streamlit
+    - aws-cdk-lib
+    - langchain
     - boto3
     - requests
