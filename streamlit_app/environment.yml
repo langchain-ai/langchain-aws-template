@@ -1,0 +1,10 @@
+name: langchain-aws-template
+channels:
+  - https://conda.anaconda.org/conda-forge
+dependencies:
+  - python=3.9
+  - pip
+  - pip:
+    - streamlit
+    - boto3
+    - requests
