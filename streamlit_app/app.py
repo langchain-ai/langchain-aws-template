@@ -3,6 +3,10 @@ import uuid
 
 import api
 
+
+USER_ICON = "images/user-icon.png"
+AI_ICON = "images/ai-icon.png"
+
 # Check if the user ID is already stored in the session state
 if 'user_id' in st.session_state:
     user_id = st.session_state['user_id']
@@ -40,18 +44,21 @@ st.markdown("""
                     padding-left: 0;
                     padding-right: 0;
                 }
+                .element-container img {
+                    background-color: #000000;
+                }
         </style>
         """, unsafe_allow_html=True)
 
 def write_logo():
     col1, col2, col3 = st.columns([5, 1, 5])
     with col2:
-        st.image('images/app-icon.png', use_column_width='always') 
+        st.image(AI_ICON, use_column_width='always') 
 
 def write_top_bar():
     col1, col2, col3 = st.columns([1,10,2])
     with col1:
-        st.image('images/app-icon.png', use_column_width='always')
+        st.image(AI_ICON, use_column_width='always')
     with col2:
         st.subheader("Chat with AI")
     with col3:
@@ -85,15 +92,16 @@ def handle_input():
 
 def write_user_message(md):
     col1, col2 = st.columns([1,12])
+    
     with col1:
-        st.image('images/user-icon.png', use_column_width='always')
+        st.image(USER_ICON, use_column_width='always')
     with col2:
         st.warning(md['question'])
 
 def render_answer(answer):
     col1, col2 = st.columns([1,12])
     with col1:
-        st.image('images/app-icon.png', use_column_width='always')
+        st.image(AI_ICON, use_column_width='always')
     with col2:
         st.info(answer)
     

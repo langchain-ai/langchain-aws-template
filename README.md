@@ -19,7 +19,8 @@ git clone https://github.com/3coins/langchain-aws-template.git
 
 Install the dependencies, this creates a conda env named `langchain-aws-service` and activates it
 ```bash
-make setup-service
+conda env create -f service/environment.yml
+conda activate langchain-aws-service
 ```
 
 Deploy the stack to your AWS console. 
@@ -43,7 +44,8 @@ You can also run the streamlit app to test the api in a web app
 ## Running the streamlit app
 Install dependencies, this creates a conda env named `langchain-aws-streamlit` and activates it
 ```bash
-make setup-streamlit
+conda env create -f streamlit_app/environment.yml
+conda activate langchain-aws-streamlit
 ```
 
 Make sure to update the `<your-api-endpoint>` in `streamlit_app/api.py` to your api gateway endpoint.
