@@ -1,4 +1,4 @@
-.PHONY: clean dist bundle deploy diff setup-streamlit run
+.PHONY: clean dist bundle deploy diff run
 
 clean:
 	@echo "Cleaning dist..."
@@ -18,9 +18,6 @@ deploy: bundle
 
 diff: 
 	cd service && cdk diff
-
-setup-streamlit:
-	conda env create -f streamlit_app/environment.yml && conda activate langchain-aws-streamlit
 
 run:
 	cd streamlit_app && streamlit run app.py

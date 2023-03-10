@@ -23,14 +23,15 @@ def handler(event, context):
     print(f"prompt is {prompt}")
     print(f"session_id is {session_id}")
     
-    response = chain.run(
+    response, session_id = chain.run(
         api_key=get_api_key(), 
         session_id=session_id, 
         prompt=prompt
     )
 
     return build_response({
-        "response": response
+        "response": response,
+        "session_id": session_id
     })
 
 

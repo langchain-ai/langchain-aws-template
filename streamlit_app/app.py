@@ -16,6 +16,8 @@ if 'user_id' in st.session_state:
 else:
     user_id = str(uuid.uuid4())
     st.session_state['user_id'] = user_id
+
+st.session_state['session_id'] = ""
     
 if "chats" not in st.session_state:
     st.session_state.chats = [
@@ -85,7 +87,7 @@ def handle_input():
     }
     st.session_state.questions.append(question_with_id)
     st.session_state.answers.append({
-        'answer': api.call(input, st.session_state['user_id']),
+        'answer': api.call(input, st.session_state['session_id']),
         'id': len(st.session_state.questions)
     })
     st.session_state.input = ""
@@ -107,9 +109,10 @@ def render_answer(answer):
     
 #Each answer will have context of the question asked in order to associate the provided feedback with the respective question
 def write_chat_message(md, q):
+    st.session_state['session_id'] = md['answer']['session_id']
     chat = st.container()
     with chat:
-        render_answer(md['answer'])     
+        render_answer(md['answer']["response"])
     
         
 with st.container():

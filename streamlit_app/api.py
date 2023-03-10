@@ -36,5 +36,5 @@ def call(prompt: str, session_id: str):
     method = "post"
     url = "<your-api-endpoint>"
     r = requests.post(url, headers=signing_headers(method, url, body), data=body)
-    response = json.loads(r.text)['response']
+    response = json.loads(r.text)
     return response

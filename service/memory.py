@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional
+from uuid import uuid4
 
 import boto3
 from botocore.exceptions import ClientError
@@ -18,6 +19,8 @@ class DynamoDBStore:
         self.ddb = boto3.client("dynamodb")
 
     def read(self, session_id: str) -> str:
+        if not session_id:
+            return ""
         try: 
             response = self.ddb.get_item(
                 TableName=self.table_name, 
@@ -35,6 +38,8 @@ class DynamoDBStore:
         return ''
 
     def write(self, session_id: str, history: str):
+        if not session_id:
+            return
         try:
             self.ddb.put_item(
                 TableName=self.table_name,
@@ -51,6 +56,8 @@ class DynamoDBStore:
             logger.error(err)
 
     def clear(self, session_id: str):
+        if not session_id:
+            return
         try:
             self.ddb.delete_item(
                 TableName=self.table_name,
@@ -72,7 +79,7 @@ class ConversationBufferStoreMemory(Memory, BaseModel):
     output_key: Optional[str] = None
     input_key: Optional[str] = None
     memory_key: str = "history"  #: :meta private:
-    session_id: str
+    session_id: str = ""
 
     @property
     def memory_variables(self) -> List[str]:
@@ -103,10 +110,19 @@ class ConversationBufferStoreMemory(Memory, BaseModel):
         history = self.buffer.read(self.session_id)
         if history:
             history += "\n"
+        
+        # Keeps each conversation immutable, this session id
+        # should be returned to the user
+        self.session_id = self.create_session_id()
+
         self.buffer.write(
             session_id=self.session_id,
             history=history + "\n".join([human, ai])
         ) 
+
+    def create_session_id(self) -> str:
+        """Creates a new session id"""
+        return str(uuid4())
 
     def clear(self) -> None:
         """Clear memory contents."""
