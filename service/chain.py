@@ -45,7 +45,7 @@ def run(api_key: str, session_id: str, prompt: str) -> Tuple[str, str]:
     
     memory = ConversationBufferMemory(chat_memory=chat_memory)   
     
-    llm = OpenAI(temperature=0.9, openai_api_key=api_key)
+    llm = OpenAI(temperature=0.9, model_name="gpt-3.5-turbo", openai_api_key=api_key)
     conversation = ConversationChain(
         llm=llm, 
         verbose=True, 
