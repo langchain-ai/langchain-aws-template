@@ -1,7 +1,8 @@
 from typing import List, Tuple
 from uuid import uuid4
 from langchain import ConversationChain, OpenAI
-from memory import ConversationBufferPersistentStoreMemory, DynamoDBMessageStore, PersistentChatMessageHistory
+from langchain.memory import ConversationBufferMemory
+from memory import DynamoDBChatMessageHistory
 
 import config
 
@@ -24,7 +25,7 @@ def run(api_key: str, session_id: str, prompt: str) -> Tuple[str, str]:
     if not session_id:
         session_id = str(uuid4())
     
-    store = DynamoDBMessageStore(
+    chat_memory = DynamoDBChatMessageHistory(
         table_name=config.config.DYNAMODB_TABLE_NAME,
         session_id=session_id
     )
@@ -33,17 +34,16 @@ def run(api_key: str, session_id: str, prompt: str) -> Tuple[str, str]:
     # If previous session was present, create
     # a new session and copy messages, and 
     # generate a new session_id 
-    messages = store._read()
+    messages = chat_memory._read()
     if messages:
         session_id = str(uuid4())
-        store = DynamoDBMessageStore(
+        chat_memory = DynamoDBChatMessageHistory(
             table_name=config.config.DYNAMODB_TABLE_NAME,
             session_id=session_id
         )
-        store._write(session_id, messages)
+        chat_memory._write(session_id, messages)
     
-    chat_history = PersistentChatMessageHistory(store=store)
-    memory = ConversationBufferPersistentStoreMemory(chat_memory=chat_history)   
+    memory = ConversationBufferMemory(chat_memory=chat_memory)   
     
     llm = OpenAI(temperature=0.9, openai_api_key=api_key)
     conversation = ConversationChain(

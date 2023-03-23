@@ -1,45 +1,34 @@
-from abc import ABC, abstractmethod
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import boto3
 from botocore.exceptions import ClientError
 
-from langchain.memory.utils import get_buffer_string
-from langchain.schema import BaseMessage, HumanMessage, AIMessage, SystemMessage, ChatMessage
-from langchain.memory.chat_memory import BaseChatMemory, ChatMessageHistory
+from langchain.schema import BaseMessage, HumanMessage, AIMessage, _message_to_dict, messages_from_dict
+from langchain.memory.chat_memory import ChatMessageHistory
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 
 import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-class MessageStore(ABC):
+class DynamoDBChatMessageHistory(ChatMessageHistory):
+    """Chat message history that stores messages in DynamoDB. 
+    DynamoDB has a limitation of max item size of 400kb. This
+    means, that conversation history size cannot exceed this 
+    size, if this message history is used. 
+    """
+    
     session_id: str
+    table_name: str
+    table: Optional[Any] = None
 
-    @abstractmethod
-    def read(self) -> List[BaseMessage]:
-        ...
-
-    @abstractmethod
-    def add_user_message(self, message: HumanMessage) -> None:
-        ...
-
-    @abstractmethod
-    def add_ai_message(self, message: AIMessage) -> None:
-        ...
-
-    @abstractmethod
-    def clear(self) -> None:
-        ...
-
-class DynamoDBMessageStore(MessageStore):
-    def __init__(self, table_name, session_id: str):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         client = boto3.resource("dynamodb")
-        self.table = client.Table(table_name)
-        self.session_id = session_id
-
+        self.table = client.Table(self.table_name)
+    
     def _read(self) -> List[Dict]:
         try: 
             response = self.table.get_item(
@@ -50,49 +39,23 @@ class DynamoDBMessageStore(MessageStore):
                 logger.warn("No record found with session id: %s", self.session_id)
             else:
                 logger.error(error)
-        
-        if response and 'Item' in response:
-            return response['Item']['History']
+        else:
+            if response and 'Item' in response:
+                return response['Item']['History']
         
         return []
 
-    def read(self) -> List[BaseMessage]:
-        items = self._read()
-        messages = []
-        for item in items:
-            role = item["role"]
-            content = item["content"]
-            if role == 'human':
-                messages.append(HumanMessage(content=content))
-            elif role == 'ai':
-                messages.append(AIMessage(content=content))
-            elif role == 'system':
-                messages.append(SystemMessage(content=content))
-            else:
-                messages.append(ChatMessage(content=content, role=role))
+    def add_user_message(self, message: str) -> None:
+        self._add_message(HumanMessage(content=message))
 
-        return messages
-    
-    def add_user_message(self, message: HumanMessage) -> None:
-        self._add_message(message)
-
-    def add_ai_message(self, message: AIMessage) -> None:
-       self._add_message(message)
+    def add_ai_message(self, message: str) -> None:
+       self._add_message(AIMessage(content=message))
 
     def _add_message(self, message: BaseMessage) -> None:
-        messages = self._read()
-        if isinstance(message, HumanMessage):
-            role = "human"
-        elif isinstance(message, AIMessage):
-            role = "ai"
-        elif isinstance(message, SystemMessage):
-            role = "system"
-        elif isinstance(message, ChatMessage):
-            role = message.role
-        else:
-            raise ValueError(f"Got unsupported message type: {message}")
-        messages.append({"role": role, "content": message.content})
-        self._write(self.session_id, messages)
+        messages_ = self._read()
+        messages_.append(_message_to_dict(message))
+        self._write(self.session_id, messages_)
+        self.messages = messages_from_dict(messages_)
 
     def _write(self, session_id: str, messages: List[Dict]):
         try:
@@ -110,57 +73,6 @@ class DynamoDBMessageStore(MessageStore):
             self.table.delete_item(
                 Key={'SessionId': self.session_id}
             )
+            self.messages = []
         except ClientError as err:
             logger.error(err)
-
-class PersistentChatMessageHistory(ChatMessageHistory):
-    store: MessageStore
-
-    class Config:
-        arbitrary_types_allowed = True
-    
-    @property
-    def messages(self) -> List[BaseMessage]:
-        self.store.read()
-
-    def add_user_message(self, message: str) -> None:
-        self.store.add_user_message(HumanMessage(content=message))
-
-    def add_ai_message(self, message: str) -> None:
-        self.store.add_ai_message(AIMessage(content=message))
-
-    def clear(self) -> None:
-        self.store.clear()
-
-
-class ConversationBufferPersistentStoreMemory(BaseChatMemory, BaseModel):
-    """Buffer for storing conversation memory."""
-
-    chat_memory: PersistentChatMessageHistory
-    human_prefix: str = "Human"
-    ai_prefix: str = "AI"
-    memory_key: str = "history"  #: :meta private:
-
-    @property
-    def buffer(self) -> Any:
-        """String buffer of memory."""
-        if self.return_messages:
-            return self.chat_memory.messages
-        else:
-            return get_buffer_string(
-                self.chat_memory.messages,
-                human_prefix=self.human_prefix,
-                ai_prefix=self.ai_prefix,
-            )
-
-    @property
-    def memory_variables(self) -> List[str]:
-        """Will always return list of memory variables.
-
-        :meta private:
-        """
-        return [self.memory_key]
-   
-    def load_memory_variables(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
-        """Return history buffer."""
-        return {self.memory_key: self.buffer}
