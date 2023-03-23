@@ -19,7 +19,7 @@ class DynamoDBChatMessageHistory(ChatMessageHistory):
     means, that conversation history size cannot exceed this 
     size, if this message history is used. 
     """
-    
+
     session_id: str
     table_name: str
     table: Optional[Any] = None
@@ -55,7 +55,6 @@ class DynamoDBChatMessageHistory(ChatMessageHistory):
         messages_ = self._read()
         messages_.append(_message_to_dict(message))
         self._write(self.session_id, messages_)
-        self.messages = messages_from_dict(messages_)
 
     def _write(self, session_id: str, messages: List[Dict]):
         try:
@@ -65,6 +64,7 @@ class DynamoDBChatMessageHistory(ChatMessageHistory):
                     'History': messages
                 }
             )
+            self.messages = messages_from_dict(messages)
         except ClientError as err:
             logger.error(err)
     
