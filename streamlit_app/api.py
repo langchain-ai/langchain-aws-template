@@ -10,8 +10,6 @@ from botocore.awsrequest import AWSRequest
 
 
 def signing_headers(method, url_string, body):
-    # Adapted from:
-    #   https://github.com/jmenga/requests-aws-sign/blob/master/requests_aws_sign/requests_aws_sign.py
     region = re.search("execute-api.(.*).amazonaws.com", url_string).group(1)
     url = urlparse(url_string)
     path = url.path or '/'

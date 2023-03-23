@@ -17,7 +17,9 @@ else:
     user_id = str(uuid.uuid4())
     st.session_state['user_id'] = user_id
 
-st.session_state['session_id'] = ""
+
+if 'session_id' not in st.session_state:
+    st.session_state['session_id'] = ""
     
 if "chats" not in st.session_state:
     st.session_state.chats = [
