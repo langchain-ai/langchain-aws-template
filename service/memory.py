@@ -6,7 +6,6 @@ from botocore.exceptions import ClientError
 from langchain.schema import BaseMessage, HumanMessage, AIMessage, _message_to_dict, messages_from_dict
 from langchain.memory.chat_memory import ChatMessageHistory
 
-from pydantic import BaseModel, Extra
 
 import logging
 logger = logging.getLogger()
@@ -15,9 +14,8 @@ logger.setLevel(logging.INFO)
 
 class DynamoDBChatMessageHistory(ChatMessageHistory):
     """Chat message history that stores messages in DynamoDB. 
-    DynamoDB has a limitation of max item size of 400kb. This
-    means, that conversation history size cannot exceed this 
-    size, if this message history is used. 
+    DynamoDB has a limitation of max item size of 400kb. Ensure
+    that conversation history does not exceed this size limit. 
     """
 
     session_id: str
