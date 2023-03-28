@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Tuple
 from uuid import uuid4
 from langchain import ConversationChain, OpenAI
 from langchain.memory import ConversationBufferMemory
