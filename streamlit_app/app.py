@@ -111,10 +111,10 @@ def render_answer(answer):
     
 #Each answer will have context of the question asked in order to associate the provided feedback with the respective question
 def write_chat_message(md, q):
-    st.session_state['session_id'] = md['answer']['session_id']
+    st.session_state['session_id'] = (md['answer'])['session_id']
     chat = st.container()
     with chat:
-        render_answer(md['answer']["response"])
+        render_answer((md['answer'])["response"])
     
         
 with st.container():
