@@ -1,5 +1,6 @@
 dist
 cdk.out
 .DS_Store
+dist*
 
 __pycache__/
