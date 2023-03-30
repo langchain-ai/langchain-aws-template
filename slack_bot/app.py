@@ -5,7 +5,8 @@ from aws_cdk import (
     aws_secretsmanager as secretsmanager,
     aws_dynamodb as dynamodb,
     aws_sqs as sqs,
-    aws_lambda_event_sources as event_sources
+    aws_lambda_event_sources as event_sources,
+    RemovalPolicy
 )
 import config
 
@@ -15,7 +16,8 @@ class SlackBotApp(Stack):
         super().__init__(app, id)
 
         table = dynamodb.Table(self, "table", table_name=config.config.DYNAMODB_TABLE_NAME, 
-            partition_key=dynamodb.Attribute(name="SessionId", type=dynamodb.AttributeType.STRING)
+            partition_key=dynamodb.Attribute(name="SessionId", type=dynamodb.AttributeType.STRING),
+            removal_policy=RemovalPolicy.DESTROY
         )
 
         queue = sqs.Queue(
