@@ -1,6 +1,4 @@
-from typing import Tuple
-from uuid import uuid4
-from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationBufferMemory, DynamoDBChatMessageHistory
 from langchain import ConversationChain
 from langchain.prompts import (
     ChatPromptTemplate, 
@@ -9,7 +7,6 @@ from langchain.prompts import (
     HumanMessagePromptTemplate
 )
 from langchain.chat_models import ChatOpenAI
-from memory import DynamoDBChatMessageHistory
 
 import config
 

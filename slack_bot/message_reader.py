@@ -5,7 +5,7 @@ from typing import Dict, Union
 
 import boto3
 
-from memory import DynamoDBChatMessageHistory
+from langchain.memory import DynamoDBChatMessageHistory
 from models import SlackMessage
 
 
@@ -45,7 +45,7 @@ def handler(event, context):
         table_name=config.config.DYNAMODB_TABLE_NAME,
         session_id=slack_message.thread
     )
-    messages = chat_memory._read()
+    messages = chat_memory.messages
     
     logging.debug(f"Thread id is {slack_message.thread}")
 
