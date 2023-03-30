@@ -1,7 +1,4 @@
 import json
-import os
-
-from typing import Dict, Union
 
 import boto3
 
@@ -10,12 +7,13 @@ from models import SlackMessage
 
 
 import config
-import requests
+import utils
 
 
 import logging
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
+
 
 def handler(event, context):
     """Lambda handler that reads the messages from slack and
@@ -33,7 +31,7 @@ def handler(event, context):
     # For initial validation call from slack
     if "challenge" in body:
         challenge = body["challenge"]
-        return build_response({"challenge": challenge})
+        return utils.build_response({"challenge": challenge})
 
     sqs = boto3.client('sqs')
     queue_url = sqs.get_queue_url(
@@ -52,7 +50,7 @@ def handler(event, context):
     try:
         if not slack_message.is_bot_reply():
             if slack_message.is_direct_message():
-                logging.debug("Sending message to queue")
+                logging.info(f"Sending message with event_id: {slack_message.event_id} to queue")
                 
                 # send to queue
                 sqs.send_message(
@@ -62,7 +60,7 @@ def handler(event, context):
                     MessageDeduplicationId=slack_message.event_id
                 )
             elif messages:
-                logging.debug("Saving message to history")
+                logging.debug(f"Saving message with event_id: {slack_message.event_id} to history")
 
                 # add to memory for context
                 chat_memory.add_user_message(slack_message.sanitized_text())
@@ -71,30 +69,5 @@ def handler(event, context):
     except Exception as e:
         logging.error(e)
     
-    return build_response("Processed message successfully!")
+    return utils.build_response("Processed message successfully!")
 
-
-def build_response(body: Union[Dict, str]):
-    return {
-        "statusCode": 200,
-        "headers": {
-            "Content-Type": "application/json"
-        },
-        "body": json.dumps(body)
-    }
-
-
-def get_api_key():
-    """Fetches the api keys saved in Secrets Manager"""
-
-    headers = {
-        "X-Aws-Parameters-Secrets-Token": os.environ.get('AWS_SESSION_TOKEN')
-    }
-    secrets_extension_endpoint = "http://localhost:2773" + \
-    "/secretsmanager/get?secretId=" + \
-    config.config.API_KEYS_SECRET_NAME
-  
-    r = requests.get(secrets_extension_endpoint, headers=headers)
-    secret = json.loads(json.loads(r.text)["SecretString"])
-
-    return secret["openai-api-key"]

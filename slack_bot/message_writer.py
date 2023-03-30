@@ -1,22 +1,20 @@
 import json
-import os
-
-from typing import Dict, Union
 
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-
 from models import SlackMessage
 import chain
 
-import config
-import requests
-
+import utils
 
 import logging
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
+
+SECRETS = utils.get_secrets()
+API_KEY = SECRETS["openai-api-key"]
+SLACK_TOKEN = SECRETS["slack-bot-token"]
 
 def handler(event, context):
     """Lambda handler that pulls the messages from the
@@ -32,15 +30,18 @@ def handler(event, context):
     slack_message = SlackMessage(body=body)
     
     try:
+        logging.info(f"Sending message with event_id: {slack_message.event_id} to LLM chain")
+        
         response_text = chain.run(
-            api_key=get_api_key("openai-api-key"), 
+            api_key=API_KEY, 
             session_id=slack_message.thread, 
             prompt=slack_message.sanitized_text()
         )
         
-        slack_token = get_api_key("slack-bot-token")
-        client = WebClient(token=slack_token)
+        client = WebClient(token=SLACK_TOKEN)
         
+        logging.info(f"Writing response for message with event_id: {slack_message.event_id} to slack")
+
         client.chat_postMessage(
             channel=slack_message.channel,
             thread_ts=slack_message.thread,
@@ -50,30 +51,6 @@ def handler(event, context):
         assert e.response["error"]
         logging.error(e)
     
-    return build_response("Processed message successfully!")
+    return utils.build_response("Processed message successfully!")
 
 
-def build_response(body: Union[Dict, str]):
-    return {
-        "statusCode": 200,
-        "headers": {
-            "Content-Type": "application/json"
-        },
-        "body": json.dumps(body)
-    }
-
-
-def get_api_key(key: str ):
-    """Fetches the api keys saved in Secrets Manager"""
-
-    headers = {
-        "X-Aws-Parameters-Secrets-Token": os.environ.get('AWS_SESSION_TOKEN')
-    }
-    secrets_extension_endpoint = "http://localhost:2773" + \
-    "/secretsmanager/get?secretId=" + \
-    config.config.API_KEYS_SECRET_NAME
-  
-    r = requests.get(secrets_extension_endpoint, headers=headers)
-    secret = json.loads(json.loads(r.text)["SecretString"])
-
-    return secret[key]
