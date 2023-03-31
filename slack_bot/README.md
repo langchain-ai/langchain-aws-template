@@ -1,5 +1,5 @@
 # Slack Bot
-This package contains the infrastructure and the code to deploy and run a backend service that can process slack messages and respond with an answer from an LLM chain (`chain.py`). The package also contains a manifest file (`slack-bot-app.yml`) that can be imported directly to create a slack bot app. This app should be installed in your workspace for users to start using the application.
+This package contains the infrastructure and the code to deploy and run a backend service that can respond to a Slack message with an answer from an LLM chain (`chain.py`). The package also contains a manifest file (`slack-bot-app.yml`) that can be imported directly to create a slack bot app. This app should be installed in your workspace for users to start using the application.
 
 ## Design
 ![Slack Bot Design](./images/slack_bot_design.svg)
@@ -9,7 +9,7 @@ This package contains the infrastructure and the code to deploy and run a backen
 Contains the infrastructure code written in CDK that will be deployed to AWS
 
 ### config.py
-Contains the configuration used by the infrastructure and the application code. The current setup expects the api keys and slack bot token to be stored in Secrets Manager under the name `api-keys`. For example retrieving the secrets in the AWS console will look like this.
+Contains the configuration used by the infrastructure and the application code. The current setup expects the API keys and Slack bot token to be stored in Secrets Manager under the name `api-keys`. For example, the secrets in the AWS console will look like this:
 ```json
 {
     "openai-api-key": "<api-key-value>",
@@ -38,24 +38,24 @@ Move to the package directory
 cd slack_bot
 ```
 
-Install the dependencies, this creates a conda env named `langchain-aws-slack-bot` and activates it
+Install the dependencies; this creates a Conda env named `langchain-aws-slack-bot` and activates it.
 ```bash
 conda deactivate
 conda env create -f service/environment.yml # only needed once
 conda activate langchain-aws-service
 ```
 
-Bundle the code for lambda deployment.
+Bundle the code for Lambda deployment.
 ```bash
 ./bundle.sh
 ```
 
-Deploy to your AWS account. These steps require that you must have configured the AWS credentials on your machine using the AWS CLI and using an account that has permissions to deploy and create infrastructure. See setting up [AWS CLI setup page](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-prereqs.html) to learn more. See the [CDK guide](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html) to learn more about CDK.
+Deploy to your AWS account. These steps require that you must have configured the AWS credentials on your machine using the AWS CLI and using an account that has permissions to deploy and create infrastructure. See the [AWS CLI setup page](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-prereqs.html) and the [CDK guide](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html) to learn more.
 ```bash
 cdk bootstrap # Only needed once, if you have not used CDK before in your account
 cdk deploy
 ```
-Using the above commands will show the list of assets this code will generate and asked for a y/n prompt for you to go ahead. Selet "y" to go ahead with the deployment. Notice the API URL generated from the deployment, this will be used in the Slack app creation step.
+After you run the above commands, you will see a list of assets that this code will generate and you will be asked whether you want to proceed. Enter `y` to go ahead with the deployment. Copy and save the API URL generated from the deployment; this will be used when you create the Slack app.
 
 ## Creating Slack apps using manifests
 Use the `slack-bot-app.yml` file to create the slack application. Update the `<api-url>` to the deployed API from the previous step. Follow the instructions here to create the app from the manifest file:

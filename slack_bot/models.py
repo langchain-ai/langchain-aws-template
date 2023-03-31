@@ -2,7 +2,7 @@ from typing import Dict
 
 
 class SlackMessage:
-    """Encapsulates the message sent by slack api"""
+    """Encapsulates the message sent by the Slack API"""
 
     def __init__(self, body: Dict):
         self.body = body

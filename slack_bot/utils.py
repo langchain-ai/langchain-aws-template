@@ -8,7 +8,7 @@ import config
 
 
 def build_response(body: Union[Dict, str]):
-    """Builds response for lambda"""
+    """Builds response for Lambda"""
     return {
         "statusCode": 200,
         "headers": {
@@ -19,7 +19,7 @@ def build_response(body: Union[Dict, str]):
 
 
 def get_secrets() -> Dict[str, str]:
-    """Fetches the api keys saved in Secrets Manager"""
+    """Fetches the API keys saved in Secrets Manager"""
 
     headers = {
         "X-Aws-Parameters-Secrets-Token": os.environ.get('AWS_SESSION_TOKEN')
