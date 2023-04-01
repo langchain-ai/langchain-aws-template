@@ -12,9 +12,6 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-SECRETS = utils.get_secrets()
-API_KEY = SECRETS["openai-api-key"]
-SLACK_TOKEN = SECRETS["slack-bot-token"]
 
 def handler(event, context):
     """Lambda handler that pulls the messages from the
@@ -30,6 +27,10 @@ def handler(event, context):
     slack_message = SlackMessage(body=body)
     
     try:
+        SECRETS = utils.get_secrets()
+        API_KEY = SECRETS["openai-api-key"]
+        SLACK_TOKEN = SECRETS["slack-bot-token"]
+
         logging.info(f"Sending message with event_id: {slack_message.event_id} to LLM chain")
         
         response_text = chain.run(

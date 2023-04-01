@@ -41,8 +41,8 @@ cd slack_bot
 Install the dependencies; this creates a Conda env named `langchain-aws-slack-bot` and activates it.
 ```bash
 conda deactivate
-conda env create -f service/environment.yml # only needed once
-conda activate langchain-aws-service
+conda env create -f environment.yml # only needed once
+conda activate langchain-aws-slack-bot
 ```
 
 Bundle the code for Lambda deployment.
