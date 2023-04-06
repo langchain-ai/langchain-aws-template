@@ -6,6 +6,6 @@ dependencies:
   - pip
   - pip:
     - aws-cdk-lib
-    - langchain==0.0.119
+    - langchain==0.0.132
     - boto3
     - requests
