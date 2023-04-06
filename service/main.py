@@ -1,12 +1,11 @@
 import json
 import os
-
 from typing import Dict
-import chain
 
-
-import config
 import requests
+
+import chain
+import config
 
 
 def handler(event, context): 
