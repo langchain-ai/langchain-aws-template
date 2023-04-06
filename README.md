@@ -1,6 +1,10 @@
 # langchain-aws-template
-This package contains a service api template that deploys a langchain based generative model API backed by a lambda and api gateway.
-Package also contains a streamlit demo web app that can connect with the deployed api to test it in a web app.
+This package contains code templates to deploy langchain based services to AWS. The templates contain both the infrastructure (CDK code) and the application code to run these services. At present, the following templates are included.
+1. **[Lambda Service](./service)**: An API Gateway + Lambda based REST service, that can connect to any front end application to create a chat like request-reply application. There is a demo web app included to interact with the deployed service.
+![Service Design](./service/images/service-design.svg)
+
+1. **[Slack Bot](./slack_bot)**: An API Gateway + Lambda based REST service, that can process slack messages by calling an LLM chain and send reply to the slack channel where the bot is installed.  
+![Slack Bot Design](./slack_bot/images/slack_bot_design.svg)
 
 ## Prerequisites
 - nodejs 18+
@@ -11,46 +15,4 @@ Package also contains a streamlit demo web app that can connect with the deploye
     - Expected secret name is `api-keys`
     - openai key is expected to be stored with `openai-api-key` key
 
-## Deploy to AWS
-Clone the repository
-```bash
-git clone https://github.com/3coins/langchain-aws-template.git
-```
 
-Install the dependencies, this creates a conda env named `langchain-aws-service` and activates it
-```bash
-conda env create -f service/environment.yml
-conda activate langchain-aws-service
-```
-
-Deploy the stack to your AWS console. 
-```bash
-make deploy
-```
-
-## Executing the API
-Note the api-id and resource-id from the deployment step 
-
-```bash
-aws apigateway test-invoke-method --rest-api-id <api-id> \
-    --http-method POST \
-    --body '{"prompt": "explain code: print(\"Hello world\")", "session_id": ""}' \
-    --resource-id <resource-id> \
-    --output json
-```
-
-You can also run the streamlit app to test the api in a web app
-
-## Running the streamlit app
-Install dependencies, this creates a conda env named `langchain-aws-streamlit` and activates it
-```bash
-conda env create -f streamlit_app/environment.yml
-conda activate langchain-aws-streamlit
-```
-
-Make sure to update the `<your-api-endpoint>` in `streamlit_app/api.py` to your api gateway endpoint.
-
-Run the streamlit app, this will open the web app in the browser.
-```bash
-make run
-```
