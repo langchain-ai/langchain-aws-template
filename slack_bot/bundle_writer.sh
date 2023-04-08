@@ -6,6 +6,6 @@ pip install --platform manylinux2014_x86_64 --implementation cp --only-binary=:a
 pip install -I openai -t dist_writer 
 
 #remove extraneous bits from installed packages
-rm -r dist_reader/*.dist-info
+rm -r dist_writer/*.dist-info
 cp config.py models.py utils.py chain.py message_writer.py dist_writer/
 cd dist_writer && zip -r lambda.zip *
