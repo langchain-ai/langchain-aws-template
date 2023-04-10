@@ -54,8 +54,16 @@ cdk deploy
 After you run the above commands, you will see a list of assets that this code will generate and you will be asked whether you want to proceed. Enter `y` to go ahead with the deployment. Copy and save the API URL generated from the deployment; this will be used when you create the Slack app.
 
 ## Executing the API
-Note the api-id and resource-id from the deployment step 
+Note the api-id from the deployment step. This is the first part in the endpoint URL generated from the deployment. For example, api-id is `qkwe1arp` in the endpoint URL `https://qkwe1arp.execute-api.us-east-1.amazonaws.com/prod`.
 
+Get the resource id.
+```bash
+aws apigateway get-resources --rest-api-id <api-id> --output=text
+# you will see an output like this, copy the resource id value, which is 789ai1gbjn in this sample
+# ITEMS   789ai1gbjn      /
+```
+
+Invoke the rest api.
 ```bash
 aws apigateway test-invoke-method --rest-api-id <api-id> \
     --http-method POST \
