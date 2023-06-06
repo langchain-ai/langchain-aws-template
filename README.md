@@ -1,5 +1,5 @@
 # langchain-aws-template
-This package contains code templates to deploy langchain based services to AWS. The templates contain both the infrastructure (CDK code) and the application code to run these services. At present, the following templates are included.
+This package contains code templates to deploy LLM applications built with LangChain to AWS. The templates contain both the infrastructure (CDK code) and the application code to run these services. At present, the following templates are included.
 
 1. **[Lambda Service](./service)**: An API Gateway + Lambda based REST service, that can connect to any front end application to create a chat like request-reply application. There is a demo web app included to interact with the deployed service.
 <img src="./service/images/service-design.svg" width="50%" height="50%" />
