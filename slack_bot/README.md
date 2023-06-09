@@ -61,4 +61,11 @@ After you run the above commands, you will see a list of assets that this code w
 Use the `slack-bot-app.yml` file to create the slack application. Update the `<api-url>` to the deployed API from the previous step. Follow the instructions here to create the app from the manifest file:
 https://api.slack.com/reference/manifests#creating_apps
 
+After creating the app in Slack, navigate to the app's `OAuth & Permissions` tab and you should find a "Bot User OAuth Token". Copy this value and add it to your AWS Secrets Manager Secret under the key `slack-bot-token` so that it looks like this:
+```json
+{
+  "openai-api-key":"<YOUR OPENAPI KEY>",
+  "slack-bot-token":"<SLACK BOT TOKEN>"
+}
+```
 
