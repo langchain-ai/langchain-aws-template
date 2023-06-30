@@ -1,4 +1,4 @@
 requests
 boto3
 slack_sdk
-langchain==0.0.126
+langchain==0.0.220
