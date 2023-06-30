@@ -1,3 +1,3 @@
-langchain==0.0.126
+langchain==0.0.220
 requests
 boto3
