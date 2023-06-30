@@ -53,5 +53,3 @@ def handler(event, context):
         logging.error(e)
     
     return utils.build_response("Processed message successfully!")
-
-
