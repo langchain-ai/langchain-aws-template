@@ -1,0 +1,4 @@
+requests
+boto3
+slack_sdk
+langchain==0.0.239
