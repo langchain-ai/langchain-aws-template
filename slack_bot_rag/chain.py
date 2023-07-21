@@ -38,7 +38,7 @@ def run(api_key: str, session_id: str, prompt: str) -> str:
     
     memory = ConversationBufferMemory(chat_memory=chat_memory, return_messages=True)   
 
-    retriever = AmazonKendraRetriever(index_id="d30dd38b-d307-4eba-90d0-c274639daf79")
+    retriever = AmazonKendraRetriever(index_id=index_id)
         
     # prompt_template = ChatPromptTemplate.from_messages([
     #     SystemMessagePromptTemplate.from_template("The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know."),
