@@ -14,11 +14,13 @@ from langchain.prompts import (
 from langchain.chat_models import ChatOpenAI
 import sys
 
+import utils
+
 import config
 
 MAX_HISTORY_LENGTH = 5
 
-def run(api_key: str, session_id: str, prompt: str) -> str:
+def run(api_key: str, session_id: str, kendra_index: str, prompt: str) -> str:
     """This is the main function that executes the prediction chain.
     Updating this code will change the predictions of the service.
 
@@ -38,7 +40,7 @@ def run(api_key: str, session_id: str, prompt: str) -> str:
     
     memory = ConversationBufferMemory(chat_memory=chat_memory, return_messages=True)   
 
-    retriever = AmazonKendraRetriever(index_id=index_id)
+    retriever = AmazonKendraRetriever(index_id=kendra_index)
 
     prompt_template = """
     The following is a friendly conversation between a human and an AI. 
