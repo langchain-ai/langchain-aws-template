@@ -80,6 +80,18 @@ def run_chain(chain, prompt: str, history=[]):
   return chain({"question": prompt, "chat_history": history})
 
 
+if __name__ == "__main__":
+    API_KEY = "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"
+    temp_prompt = "Who is Firaz Akmal?"
+
+    chain = run(
+        api_key=API_KEY, 
+        session_id="diana", 
+        prompt=temp_prompt
+    )
+
+    result = run_chain(chain, temp_prompt)
+    print(result['answer'])
 
 
 
