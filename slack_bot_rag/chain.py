@@ -38,13 +38,7 @@ def run(api_key: str, session_id: str, prompt: str) -> str:
     
     memory = ConversationBufferMemory(chat_memory=chat_memory, return_messages=True)   
 
-    retriever = AmazonKendraRetriever(index_id="d30dd38b-d307-4eba-90d0-c274639daf79")
-        
-    # prompt_template = ChatPromptTemplate.from_messages([
-    #     SystemMessagePromptTemplate.from_template("The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know."),
-    #     MessagesPlaceholder(variable_name="history"),
-    #     HumanMessagePromptTemplate.from_template("{input}")
-    # ])
+    retriever = AmazonKendraRetriever(index_id=index_id)
 
     prompt_template = """
     The following is a friendly conversation between a human and an AI. 
@@ -85,6 +79,19 @@ def run(api_key: str, session_id: str, prompt: str) -> str:
 
 def run_chain(chain, prompt: str, history=[]):
   return chain({"question": prompt, "chat_history": history})
+
+if __name__ == "__main__":
+    API_KEY = "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"
+    temp_prompt = "Who is Firaz Akmal?"
+
+    chain = run(
+        api_key=API_KEY, 
+        session_id="diana", 
+        prompt=temp_prompt
+    )
+
+    result = run_chain(chain, temp_prompt)
+    print(result['answer'])
 
 
 
