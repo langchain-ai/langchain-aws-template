@@ -2,7 +2,7 @@
 This package contains the infrastructure and the code to deploy and run a backend service that can respond to a Slack message with an answer from an LLM chain (`chain.py`). The package also contains a manifest file (`slack-bot-app.yml`) that can be imported directly to create a slack bot app. This app should be installed in your workspace for users to start using the application.
 
 ## Design
-![Slack Bot Design](./images/slack_bot_design.svg)
+![Slack Bot Design](./images/kendra.xml)
 
 ## Code organization
 ### app.py
