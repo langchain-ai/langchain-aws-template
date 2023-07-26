@@ -35,12 +35,14 @@ def handler(event, context):
 
         logging.info(f"Sending message with event_id: {slack_message.event_id} to LLM chain")
         
-        response_text = chain.run(
+        langchain = chain.run(
             api_key=API_KEY, 
             session_id=slack_message.thread,
             kendra_index_id = INDEX_ID, 
             prompt=slack_message.sanitized_text()
         )
+        response = chain.run_chain(langchain, slack_message.sanitized_text())
+        response_text = response['answer']
         
         client = WebClient(token=SLACK_TOKEN)
         
@@ -56,5 +58,3 @@ def handler(event, context):
         logging.error(e)
     
     return utils.build_response("Processed message successfully!")
-
-

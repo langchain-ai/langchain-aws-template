@@ -31,8 +31,7 @@ def run(api_key: str, session_id: str, kendra_index_id: str, prompt: str) -> str
 
     Returns:
         The prediction from LLM
-    """
-    
+    """    
     chat_memory = DynamoDBChatMessageHistory(
         table_name=config.config.DYNAMODB_TABLE_NAME,
         session_id=session_id
@@ -41,8 +40,6 @@ def run(api_key: str, session_id: str, kendra_index_id: str, prompt: str) -> str
     memory = ConversationBufferMemory(chat_memory=chat_memory, return_messages=True)   
 
     retriever = AmazonKendraRetriever(index_id=kendra_index_id)
-    # retriever = AmazonKendraRetriever(index_id = "d30dd38b-d307-4eba-90d0-c274639daf79")
-
     prompt_template = """
     The following is a friendly conversation between a human and an AI. 
      The AI is talkative and provides lots of specific details from its context.
@@ -81,6 +78,4 @@ def run(api_key: str, session_id: str, kendra_index_id: str, prompt: str) -> str
 
 def run_chain(chain, prompt: str, history=[]):
   return chain({"question": prompt, "chat_history": history})
-
-
 
