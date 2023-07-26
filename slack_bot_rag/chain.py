@@ -20,7 +20,7 @@ import config
 
 MAX_HISTORY_LENGTH = 5
 
-def run(api_key: str, session_id: str, kendra_index: str, prompt: str) -> str:
+def run(api_key: str, session_id: str, kendra_index_id: str, prompt: str) -> str:
     """This is the main function that executes the prediction chain.
     Updating this code will change the predictions of the service.
 
@@ -40,7 +40,8 @@ def run(api_key: str, session_id: str, kendra_index: str, prompt: str) -> str:
     
     memory = ConversationBufferMemory(chat_memory=chat_memory, return_messages=True)   
 
-    retriever = AmazonKendraRetriever(index_id=kendra_index)
+    retriever = AmazonKendraRetriever(index_id=kendra_index_id)
+    # retriever = AmazonKendraRetriever(index_id = "d30dd38b-d307-4eba-90d0-c274639daf79")
 
     prompt_template = """
     The following is a friendly conversation between a human and an AI. 
@@ -82,6 +83,18 @@ def run_chain(chain, prompt: str, history=[]):
   return chain({"question": prompt, "chat_history": history})
 
 
+if __name__ == "__main__":
 
+    API_KEY = "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"
+    temp_prompt = "Who is Firaz Akmal?"
 
+    chain = run(
+        api_key=API_KEY, 
+        session_id="diana", 
+        kendra_index_id= "d30dd38b-d307-4eba-90d0-c274639daf79",
+        prompt=temp_prompt
+    )
+
+    result = run_chain(chain, temp_prompt)
+    print(result['answer'])
 

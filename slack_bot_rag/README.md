@@ -1,8 +1,8 @@
-# Slack Bot
-This package contains the infrastructure and the code to deploy and run a backend service that can respond to a Slack message with an answer from an LLM chain (`chain.py`). The package also contains a manifest file (`slack-bot-app.yml`) that can be imported directly to create a slack bot app. This app should be installed in your workspace for users to start using the application.
+# Slack Bot Rag
+This package contains the infrastructure and the code to deploy and run a backend service that can respond to a Slack message with an answer from an LLM chain (`chain.py`) using a RAG chain and Kendra as a retriever. The package also contains a manifest file (`slack-bot-app.yml`) that can be imported directly to create a slack bot app. This app should be installed in your workspace for users to start using the application.
 
 ## Design
-![Slack Bot Design](./images/kendra.xml)
+![Slack Bot Design](./images/kendra.svg)
 
 ## Code organization
 ### app.py
@@ -13,7 +13,8 @@ Contains the configuration used by the infrastructure and the application code. 
 ```json
 {
     "openai-api-key": "<api-key-value>",
-    "slack-bot-token": "<bot-token>"
+    "slack-bot-token": "<bot-token>",
+    "kendra-index-id": "<index-id>"
 }
 ```
 

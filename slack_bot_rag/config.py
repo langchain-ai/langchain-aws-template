@@ -54,6 +54,7 @@ class Config:
 
     # Queue name for the slack messages
     MESSAGE_QUEUE_NAME = "slack-bot-message-queue.fifo"
+    KENDRA_INDEX_ID = "d30dd38b-d307-4eba-90d0-c274639daf79"
 
 
 config = Config()

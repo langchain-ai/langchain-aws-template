@@ -7,6 +7,7 @@ from models import SlackMessage
 import chain
 
 import utils
+import config
 
 import logging
 logger = logging.getLogger()
@@ -30,14 +31,14 @@ def handler(event, context):
         SECRETS = utils.get_secrets()
         API_KEY = SECRETS["openai-api-key"]
         SLACK_TOKEN = SECRETS["slack-bot-token"]
-        INDEX_ID = SECRETS["index-id"]
+        INDEX_ID = config.config.KENDRA_INDEX_ID
 
         logging.info(f"Sending message with event_id: {slack_message.event_id} to LLM chain")
         
         response_text = chain.run(
             api_key=API_KEY, 
             session_id=slack_message.thread,
-            kendra_index = INDEX_ID, 
+            kendra_index_id = INDEX_ID, 
             prompt=slack_message.sanitized_text()
         )
         
