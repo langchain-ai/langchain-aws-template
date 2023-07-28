@@ -1,8 +1,8 @@
 # Slack Bot Rag
-This package contains the infrastructure and the code to deploy and run a backend service that can respond to a Slack message with an answer from an LLM chain (`chain.py`) using a RAG chain and Kendra as a retriever. The package also contains a manifest file (`slack-bot-app.yml`) that can be imported directly to create a slack bot app. This app should be installed in your workspace for users to start using the application.
+This package contains the infrastructure and the code to deploy and run a backend service that can respond to a Slack message with an answer from an LLM chain (`chain.py`) using a RAG chain and Amazon Kendra as a retriever. The package also contains a manifest file (`slack-bot-app.yml`) that can be imported directly to create a slack bot app. This app should be installed in your workspace for users to start using the application.
 
 ## Design
-![Slack Bot Design](./images/kendra.svg)
+![Slack Bot Design](./images/slack_bot_rag_design.svg)
 
 ## Code organization
 ### app.py
@@ -13,10 +13,11 @@ Contains the configuration used by the infrastructure and the application code. 
 ```json
 {
     "openai-api-key": "<api-key-value>",
-    "slack-bot-token": "<bot-token>",
-    "kendra-index-id": "<index-id>"
+    "slack-bot-token": "<bot-token>"
 }
 ```
+
+The current template does not include the infrastructure code to create a Kendra index, and assumes that you have a Kendra index created and ready to serve in your AWS account. Before deploying this template, update the `KENDRA_INDEX_ID` value in the `config.py` with your Kendra index id. 
 
 ### message_reader.py
 Lambda handler that processes the incoming messages and puts them in a queue to be processed by the LLM chain or saves them to the history database. 
