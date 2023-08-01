@@ -9,6 +9,11 @@ import chain
 import utils
 import config
 
+from langchain.memory import DynamoDBChatMessageHistory
+
+from langchain.memory import ConversationBufferMemory
+
+
 import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -26,7 +31,13 @@ def handler(event, context):
     record = event['Records'][0]
     body = json.loads(record['body'])
     slack_message = SlackMessage(body=body)
-    
+
+    chat_memory = DynamoDBChatMessageHistory(
+        table_name=config.config.DYNAMODB_TABLE_NAME,
+        session_id=slack_message.thread
+    )
+    memory = ConversationBufferMemory(chat_memory=chat_memory, memory_key="chat_history", return_messages=True)
+
     try:
         SECRETS = utils.get_secrets()
         API_KEY = SECRETS["openai-api-key"]
@@ -41,8 +52,12 @@ def handler(event, context):
             kendra_index_id = INDEX_ID, 
             prompt=slack_message.sanitized_text()
         )
-        response = chain.run_chain(langchain, slack_message.sanitized_text())
+        memory_list = memory.buffer
+        response = chain.run_chain(langchain, slack_message.sanitized_text(), memory_list)
         response_text = response['answer']
+
+        # add to memory for context
+        chat_memory.add_ai_message(response_text)
         
         client = WebClient(token=SLACK_TOKEN)
         

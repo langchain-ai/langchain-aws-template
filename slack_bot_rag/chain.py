@@ -32,17 +32,10 @@ def run(api_key: str, session_id: str, kendra_index_id: str, prompt: str) -> str
     Returns:
         The prediction from LLM
     """    
-    chat_memory = DynamoDBChatMessageHistory(
-        table_name=config.config.DYNAMODB_TABLE_NAME,
-        session_id=session_id
-    )
-    
-    memory = ConversationBufferMemory(chat_memory=chat_memory, return_messages=True)   
-
     retriever = AmazonKendraRetriever(index_id=kendra_index_id)
     prompt_template = """
     The following is a friendly conversation between a human and an AI. 
-     The AI is talkative and provides lots of specific details from its context.
+    The AI is talkative and provides lots of specific details from its context.
     If the AI does not know the answer to a question, it truthfully says it 
     does not know.
     {context}
@@ -54,8 +47,7 @@ def run(api_key: str, session_id: str, kendra_index_id: str, prompt: str) -> str
     )
 
     condense_qa_template = """
-    Given the following conversation and a follow up question, rephrase the follow up question 
-    to be a standalone question.
+    Given the following conversation and chat history, answer the {question}.
 
     Chat History:
     {chat_history}
@@ -63,14 +55,14 @@ def run(api_key: str, session_id: str, kendra_index_id: str, prompt: str) -> str
     Standalone question:"""
     standalone_question_prompt = PromptTemplate.from_template(condense_qa_template)
     
-    llm = ChatOpenAI(temperature=0, openai_api_key=api_key)
+    llm = ChatOpenAI(temperature=0, openai_api_key=api_key, max_tokens=300)
     conversation = ConversationalRetrievalChain.from_llm(
         llm=llm, 
         retriever=retriever,
         return_source_documents=True, 
         condense_question_prompt=standalone_question_prompt, 
         verbose=True, 
-        combine_docs_chain_kwargs={"prompt":PROMPT} 
+        combine_docs_chain_kwargs={"prompt":PROMPT},
     )
 
     print("success")
