@@ -81,7 +81,7 @@ def run_chain(chain, prompt: str, history=[]):
 
 if __name__ == "__main__":
 
-    API_KEY = "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"
+    API_KEY = "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"
     temp_prompt = "who is Jennifer Lambert from Klick health?"
 
 
