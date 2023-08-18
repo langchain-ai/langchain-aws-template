@@ -7,7 +7,7 @@ This package contains code templates to deploy langchain based services to AWS. 
 2. **[Slack Bot](./slack_bot)**: An API Gateway + Lambda based REST service, that can process slack messages by calling an LLM chain and send reply to the slack channel where the bot is installed.  
 <img src="./slack_bot/images/slack_bot_design.svg" width="60%" height="60%" />
 
-3. **[Slack Bot](./slack_bot_rag)**: An API Gateway + Lambda + Kendra based REST service, that can process slack messages by calling an LLM chain and send reply to the slack channel where the bot is installed. This template uses the RAG (Retrieval Augmented Generation) approach with Amazon Kendra as the retriever. 
+3. **[Slack Bot Rag](./slack_bot_rag)**: An API Gateway + Lambda + Kendra based REST service, that can process slack messages by calling an LLM chain and send reply to the slack channel where the bot is installed. This template uses the RAG (Retrieval Augmented Generation) approach with Amazon Kendra as the retriever. 
 <img src="./slack_bot_rag/images/slack_bot_rag_design.svg" width="60%" height="60%" />
 
 ## Prerequisites
