@@ -78,21 +78,3 @@ def run(api_key: str, session_id: str, kendra_index_id: str, prompt: str) -> str
 
 def run_chain(chain, prompt: str, history=[]):
   return chain({"question": prompt, "chat_history": history})
-
-if __name__ == "__main__":
-
-    API_KEY = "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"
-    temp_prompt = "who is Jennifer Lambert from Klick health?"
-
-
-    chain = run(
-        api_key=API_KEY, 
-        session_id="somethingelse", 
-        kendra_index_id= "6650f5d4-6d4b-4322-b39f-532741c459ea",
-        prompt=temp_prompt,
-        
-    )
-
-    result = run_chain(chain, temp_prompt)
-
-    print(result['answer'])
