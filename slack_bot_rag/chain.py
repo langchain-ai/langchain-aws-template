@@ -32,10 +32,17 @@ def run(api_key: str, session_id: str, kendra_index_id: str, prompt: str) -> str
     Returns:
         The prediction from LLM
     """    
+    chat_memory = DynamoDBChatMessageHistory(
+        table_name=config.config.DYNAMODB_TABLE_NAME,
+        session_id=session_id
+    )
+    
+    memory = ConversationBufferMemory(chat_memory=chat_memory, return_messages=True)   
+
     retriever = AmazonKendraRetriever(index_id=kendra_index_id)
     prompt_template = """
     The following is a friendly conversation between a human and an AI. 
-    The AI is talkative and provides lots of specific details from its context.
+     The AI is talkative and provides lots of specific details from its context.
     If the AI does not know the answer to a question, it truthfully says it 
     does not know.
     {context}
@@ -47,7 +54,8 @@ def run(api_key: str, session_id: str, kendra_index_id: str, prompt: str) -> str
     )
 
     condense_qa_template = """
-    Given the following conversation and chat history, answer the {question}.
+    Given the following conversation and a follow up question, rephrase the follow up question 
+    to be a standalone question.
 
     Chat History:
     {chat_history}
@@ -55,7 +63,7 @@ def run(api_key: str, session_id: str, kendra_index_id: str, prompt: str) -> str
     Standalone question:"""
     standalone_question_prompt = PromptTemplate.from_template(condense_qa_template)
     
-    llm = ChatOpenAI(temperature=0, openai_api_key=api_key, max_tokens=300)
+    llm = ChatOpenAI(temperature=0, openai_api_key=api_key)
     conversation = ConversationalRetrievalChain.from_llm(
         llm=llm, 
         retriever=retriever,
@@ -71,3 +79,20 @@ def run(api_key: str, session_id: str, kendra_index_id: str, prompt: str) -> str
 def run_chain(chain, prompt: str, history=[]):
   return chain({"question": prompt, "chat_history": history})
 
+if __name__ == "__main__":
+
+    API_KEY = "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"
+    temp_prompt = "who is Jennifer Lambert from Klick health?"
+
+
+    chain = run(
+        api_key=API_KEY, 
+        session_id="somethingelse", 
+        kendra_index_id= "6650f5d4-6d4b-4322-b39f-532741c459ea",
+        prompt=temp_prompt,
+        
+    )
+
+    result = run_chain(chain, temp_prompt)
+
+    print(result['answer'])
